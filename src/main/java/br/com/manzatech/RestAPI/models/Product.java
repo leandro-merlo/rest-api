@@ -8,8 +8,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Product implements Serializable {
@@ -23,8 +30,14 @@ public class Product implements Serializable {
 	private Long id;
 	
 	@Column
+	@NotEmpty(message="Não pode ser vazio")
+	@NotBlank(message="Não pode estar em branco")
+	@Size(min=4, max=255)
 	private String name;
 	@Column
+	@Min(0)
+	@Max(1000)
+	@NotNull
 	private Integer quantity;
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column
@@ -40,6 +53,13 @@ public class Product implements Serializable {
 		this.quantity = quantity;
 	}
 
+	@PrePersist
+	public void onPrePersist() {
+		if (createdAt != null) {
+			createdAt = new Date();
+		}
+	}
+	
 	public Long getId() {
 		return id;
 	}
